@@ -26,6 +26,18 @@ jobs:
           PACKAGE_VERSION=$(jq -r .version package.json)
           echo "export APP_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
 
+      - name: Check Existing Release
+        run: |
+          existing_tag=$(gh release view ${{ env.APP_VERSION }} --json tag_name -q '.tag_name' || echo "")
+          if [[ -z "$existing_tag" ]]; then
+            echo "Release ${{ env.APP_VERSION }} doesn't exist. Creating a new release..."
+          else
+            echo "Release ${{ env.APP_VERSION }} already exists. Skipping the release creation."
+            exit 0
+          fi
+        if: steps.version-check.outputs.APP_VERSION
+    
+
       - name: Create Git Tag
         run: |
           git config user.email "${{ github.actor }}@users.noreply.github.com"
@@ -51,12 +63,10 @@ jobs:
 
           tag="v$version"
 
-          if git rev-parse -q --verify "$tag" > /dev/null; then
-            echo "Tag $tag already exists. Skipping release creation."
-          else
-            git log -n 1 --pretty=format:"- %s (%an)" > commit_messages.txt
-            gh release create $tag --title "$release_title" --notes-file commit_messages.txt
-          fi
+          git log -n 1  --pretty=format:"- %s (%an)" > commit_messages.txt
+
+          # Create a GitHub release with release notes using gh
+          gh release create $tag  --title "$release_title" --notes-file commit_messages.txt
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
