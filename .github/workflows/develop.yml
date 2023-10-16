@@ -21,17 +21,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Get New Commits
-        run: |
-          # Check if there are any tags in the repository release
-          if [[ -n "$(git tag -l)" ]]; then
-            LAST_BUILD_COMMIT=$(git describe --tags --abbrev=0)
-            git log --pretty=format:"- %s (%an)" $LAST_BUILD_COMMIT..HEAD > commit_messages.txt
-          else
-            # Create an empty commit_messages.txt file
-             git log -n 1 origin/master --pretty=format:"- %s (%an)" > commit_messages.txt
-          fi
-          
       - name: Get Version from package.json
         run: |
           PACKAGE_VERSION=$(jq -r .version package.json)
@@ -61,6 +50,8 @@ jobs:
           release_title="v$version"
 
           tag="v$version"
+          
+          git log -n 1 origin/master --pretty=format:"- %s (%an)" > commit_messages.txt
 
           # Create a GitHub release with release notes using gh
           gh release create $tag  --title "$release_title" --notes-file commit_messages.txt
