@@ -1,5 +1,4 @@
-name: Release Library
-
+name: Create Release with GitHub CLI
 on:
   push:
     branches:
@@ -25,6 +24,7 @@ jobs:
         run: |
           PACKAGE_VERSION=$(jq -r .version package.json)
           echo "export APP_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+        id: version-check
 
       - name: Check Existing Release
         run: |
@@ -36,39 +36,32 @@ jobs:
             exit 0
           fi
         if: steps.version-check.outputs.APP_VERSION
-    
 
       - name: Create Git Tag
         run: |
           git config user.email "${{ github.actor }}@users.noreply.github.com"
           git config user.name "${{ github.actor }}"
           git tag -a v${{ env.APP_VERSION }} -m "Version ${{ env.APP_VERSION }}"
+        if: steps.version-check.outputs.APP_VERSION
 
       - name: Save Commit Messages as Artifact
         uses: actions/upload-artifact@v2
         with:
           name: commit-messages
           path: commit_messages.txt
+        if: steps.version-check.outputs.APP_VERSION
 
-      - name: Create Release with GitHub CLI
+      - name: Create GitHub Release
         run: |
           PACKAGE_VERSION=$(jq -r .version package.json)
           echo "export APP_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
-          # Create a new branch (e.g., release)
           git config user.email "${{ github.actor }}@users.noreply.github.com"
           git config user.name "${{ github.actor }}"
-          version=$PACKAGE_VERSION  # Use the correct variable name
-
+          version=$PACKAGE_VERSION
           release_title="v$version"
-
           tag="v$version"
-
-          git log -n 1  --pretty=format:"- %s (%an)" > commit_messages.txt
-
-          # Create a GitHub release with release notes using gh
-          gh release create $tag  --title "$release_title" --notes-file commit_messages.txt
-
+          git log -n 1 --pretty=format:"- %s (%an)" > commit_messages.txt
+          gh release create $tag --title "$release_title" --notes-file commit_messages.txt
+        if: steps.version-check.outputs.APP_VERSION
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
-      
