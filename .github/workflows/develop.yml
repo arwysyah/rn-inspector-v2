@@ -45,10 +45,14 @@ jobs:
           # Create a new branch (e.g., release)
           git config user.email "${{ github.actor }}@users.noreply.github.com"
           git config user.name "${{ github.actor }}"
+          version=$PACKAGE_VERSION  # Use the correct variable name
+
           release_title="v$version"
-          
-          # release the APK and the source code
-          gh release create $version  --title "$release_title" --notes-file commit_messages.txt
+
+          tag="v$version"
+
+          # Create a GitHub release with release notes using gh
+          gh release create $tag  --title "$release_title" --notes-file commit_messages.txt
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
