@@ -1,0 +1,38 @@
+{
+  "name": "rn-inspector-modules",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "execs-all": "bun run index.js",
+    "execs-dependencies": "bun run  getModuleDependencies.js",
+    "execs-dev--dependencies": "bun run getModuleDevDependencies.js",
+    "execs-table--all": "bun run createTableAll.js",
+    "execs-table--deps": "bun run createTableDependencies.js",
+    "execs-table--devDependencies": "node createTableDevDependencies.js",
+    "execs-devs--cli-deps": "bun run displayDependenciesToCli.js",
+    "execs-devs--cli-devDependencies": "bun run displayDevDependenciesToCli.js"
+  },
+  "keywords": [
+    "react-native",
+    "ios",
+    "android"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arwysyah/rn-inspector-v2.git"
+  },
+  "author": "arwysyah <arwysyahputrasiregar@gmail.com> (https://github.com/arwysyah)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/arwysyah/rn-inspector-v2/issues"
+  },
+  "homepage": "https://github.com/arwysyah/rn-inspector-v2#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "devDependencies": {
+    "cli-table": "^0.3.11",
+    "picocolors": "^1.0.0"
+  }
+}
