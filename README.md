@@ -1,6 +1,6 @@
 # rn-inspector-v2
 
-An experimental library to Inspect and analyze Node modules in your React Native project.
+An experimental library to Inspect and analyze Node modules in your React Native project inside of Bun.
 not yet tested in Windows and Linux
 
 # INSTALLATION

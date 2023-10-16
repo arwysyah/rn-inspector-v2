@@ -51,10 +51,12 @@ jobs:
 
           tag="v$version"
 
-          git log -n 1  --pretty=format:"- %s (%an)" > commit_messages.txt
-
-          # Create a GitHub release with release notes using gh
-          gh release create $tag  --title "$release_title" --notes-file commit_messages.txt
+          if git rev-parse -q --verify "$tag" > /dev/null; then
+            echo "Tag $tag already exists. Skipping release creation."
+          else
+            git log -n 1 --pretty=format:"- %s (%an)" > commit_messages.txt
+            gh release create $tag --title "$release_title" --notes-file commit_messages.txt
+          fi
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
